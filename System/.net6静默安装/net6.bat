@@ -1,0 +1,50 @@
+@echo off
+setlocal enabledelayedexpansion
+
+:: 设置下载文件夹路径
+set DOWNLOAD_FOLDER=C:\Downloads
+
+:: 创建下载文件夹（如果不存在）
+if not exist %DOWNLOAD_FOLDER% (
+    mkdir %DOWNLOAD_FOLDER%
+)
+
+:: 定义文件名和URL的列表
+set FILE_URLS[0]=https://download.visualstudio.microsoft.com/download/pr/23c7bf0d-e22d-4372-bcb2-292eb36a5238/11af494be409759f46b679ab22e65a58/dotnet-sdk-6.0.424-win-x64.exe
+set FILE_NAMES[0]=dotnet-sdk-6.0.424-win-x64.exe
+
+set FILE_URLS[1]=https://download.visualstudio.microsoft.com/download/pr/67acc6b0-c653-4abf-af31-96edf0f75b24/90a29be6426124af37a70871fe1c0509/dotnet-hosting-6.0.32-win.exe
+set FILE_NAMES[1]=dotnet-hosting-6.0.32-win.exe
+
+set FILE_URLS[2]=https://download.visualstudio.microsoft.com/download/pr/cd77851b-80d8-4ef6-87ee-afbaf715cea5/a2e9029cd1d4f0e35641e42852ac911e/aspnetcore-runtime-6.0.32-win-x64.exe
+set FILE_NAMES[2]=aspnetcore-runtime-6.0.32-win-x64.exe
+
+:: 循环遍历所有文件名和URL进行下载和安装
+for /L %%i in (0, 1, 2) do (
+    set FILE_URL=!FILE_URLS[%%i]!
+    set FILE_NAME=!FILE_NAMES[%%i]!
+
+    :: 下载文件（如果不存在）
+    if not exist %DOWNLOAD_FOLDER%\!FILE_NAME! (
+        echo 正在下载 !FILE_NAME!...
+        bitsadmin /transfer myDownloadJob /download /priority normal !FILE_URL! %DOWNLOAD_FOLDER%\!FILE_NAME!
+        if !errorlevel! neq 0 (
+            echo 下载失败！
+            exit /b 1
+        )
+        echo !FILE_NAME! 下载成功！
+    ) else (
+        echo !FILE_NAME! 已存在，跳过下载。
+    )
+
+    :: 直接运行安装程序并传递参数
+    echo 开始静默安装 !FILE_NAME!...
+    %DOWNLOAD_FOLDER%\!FILE_NAME! /install /quiet /passive
+    if !errorlevel! neq 0 (
+        echo 安装失败！
+        exit /b 1
+    )
+    echo !FILE_NAME! 安装完成！
+)
+
+pause
