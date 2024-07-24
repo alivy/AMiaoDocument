@@ -175,6 +175,8 @@ PeriodicPreWarmUp.Start();
 
 以上代码展示了如何使用`Timer`类定期发送预热请求。可以根据实际需求调整定时器的间隔时间。
 
+![预热配置](https://github.com/alivy/AMiaoDocument/blob/main/NetCore/%E9%A2%84%E7%83%AD/image-20240717152848364.png)
+
 ## 结论
 
 通过预热请求，我们可以有效地解决站点启动时大流量涌入导致的卡顿问题。在C#中，我们可以使用`HttpClient`类发送预热请求，并结合ASP.NET Core的`IHostedService`接口实现自动化预热。希望本文对您有所帮助，如果有任何问题或建议，欢迎在评论区交流。
